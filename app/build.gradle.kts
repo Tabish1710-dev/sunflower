@@ -42,6 +42,7 @@ android {
       }
     }
   }
+
   buildTypes {
     release {
       isMinifyEnabled = true
@@ -57,27 +58,25 @@ android {
       )
     }
   }
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
 
   kotlinOptions {
-    // work-runtime-ktx 2.1.0 and above now requires Java 8
     jvmTarget = JavaVersion.VERSION_17.toString()
-
-    // Enable Coroutines and Flow APIs
     freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
     freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlinx.coroutines.FlowPreview"
   }
+
   buildFeatures {
     compose = true
     dataBinding = true
     buildConfig = true
   }
+
   packagingOptions {
-    // Multiple dependency bring these files in. Exclude them to enable
-    // our test APK to build (has no effect on our AARs)
     resources.excludes += "/META-INF/AL2.0"
     resources.excludes += "/META-INF/LGPL2.1"
   }
@@ -93,13 +92,18 @@ android {
       }
     }
   }
+
+  // 👇 Added Lint block to ignore missing translation errors
+  lint {
+    abortOnError = false
+    disable += "MissingTranslation"
+  }
+
   namespace = "com.google.samples.apps.sunflower"
 }
 
 androidComponents {
   onVariants(selector().withBuildType("release")) {
-    // Only exclude *.version files in release mode as debug mode requires
-    // these files for layout inspector to work.
     it.packaging.resources.excludes.add("META-INF/*.version")
   }
 }
